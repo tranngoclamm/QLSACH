@@ -1,23 +1,28 @@
 <?php
+require_once 'Model/UserModel.php';
+require_once 'View/LoginView.php';
 
-function sayHello($name) {
-	echo "Hello $name!";
+$action = isset($_GET['action']) ? $_GET['action'] : '';
+
+if ($action === 'login') {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    $userModel = new UserModel();
+    $loggedIn = $userModel->login($username, $password);
+
+    if ($loggedIn) {
+        // Chuyển hướng đến trang hiển thị sách sau khi đăng nhập thành công
+        echo "Đăng nhập thành công!";
+        exit();
+    } else {
+        // Hiển thị lại form đăng nhập nếu đăng nhập không thành công
+        $loginView = new LoginView();
+        $loginView->showLogin();
+    }
+} else {
+    // Hiển thị form đăng nhập ban đầu
+    $loginView = new LoginView();
+    $loginView->showLogin();
 }
-
 ?>
-
-<html>
-	<head>
-		<title>Advanced Web Development K15-N03</title>
-	</head>
-	<body>
-		<?php 
-		sayHello('K15-N03 2024');		
-		?>
-		<form action="checkLogin.php" method="POST">
-		<a>Username:</a><input type=text name="userName" size =16>
-		<a>Password:</a><input type=password name="passWord" size =16>
-		<input type=submit name=submit value="Login">
-		</form>
-	</body>
-</html>
