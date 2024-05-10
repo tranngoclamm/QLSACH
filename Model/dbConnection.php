@@ -1,54 +1,60 @@
-
-
 <?php
-$env = file_get_contents(".env");
 
-$lines = explode("\n",$env);
+$uri = "mysql://avnadmin:AVNS_HxJ0KL7R6R9aGqhSh7n@mysql-6c78cd5-db25ts4.i.aivencloud.com:27943/defaultdb?ssl-mode=REQUIRED";
 
-foreach($lines as $line){
-  preg_match("/([^#]+)\=(.*)/",$line,$matches);
-  if(isset($matches[2])){
-    putenv(trim($line));
-  }
-} 
+$fields = parse_url($uri);
 
-$db = getenv('Database');//returns: localhost
+// build the DSN including SSL settings
+$conn = "mysql:";
+$conn .= "host=" . $fields["host"];
+$conn .= ";port=" . $fields["port"];
+$conn .= ";dbname=defaultdb";
+$conn .= ";sslmode=verify-ca;sslrootcert=ca.pem";
 
-$host = getenv('Host');
-$port =getenv('Port');
-$user = getenv('User');
-$password = getenv('Password');
+try {
+  $db = new PDO($conn, $fields["user"], $fields["pass"]);
 
-phpinfo();
+  // Tạo CSDL QUANLYSACH
+  $query = "CREATE DATABASE QUANLYSACH";
+  $db->exec($query);
+  $db->exec("USE QUANLYSACH");
 
+  // Tạo bảng Sach
+  $query = "CREATE TABLE Sach (
+    MaSach INT PRIMARY KEY,
+    TenSach VARCHAR(255),
+    SoLuong INT
+  )";
+  $db->exec($query);
 
-//$dbconn = pg_connect("dbname=$db");
-//connect to a database named "mary"
+  // Tạo bảng User
+  $query = "CREATE TABLE User (
+    MaUser INT PRIMARY KEY,
+    TenUser VARCHAR(255),
+    MatKhau VARCHAR(255)
+  )";
+  $db->exec($query);
 
-//$dbconn2 = pg_connect("host=$host port=$port dbname=$db");
-// connect to a database named "mary" on "localhost" at port "5432"
+  // Chèn 5 bản ghi cho bảng Sach
+  $query = "INSERT INTO Sach (MaSach, TenSach, SoLuong) VALUES
+    (1, 'The Pragmatic Programmer', 10),
+    (2, 'Productive Projects and Teams', 5),
+    (3, 'The Clean Coder: A Code of Conduct for Professional Programmers', 3),
+    (4, 'Code Complete: A Practical Handbook of Software Construction', 8),
+    (5, 'The Mythical Man-month: Essays on Software Engineering', 2)";
+  $db->exec($query);
 
-//$dbconn3 = pg_connect("host=sheep port=5432 dbname=mary user=lamb password=foo");
-//connect to a database named "mary" on the host "sheep" with a username and password
-//user, pass, host, port, and database name.
-//$conn_string = "host=$host port=$port dbname=$db user=$user password=$password";
+  // Chèn 5 bản ghi cho bảng User
+  $query = "INSERT INTO User (MaUser, TenUser, MatKhau) VALUES
+    (1, 'lamtn', 'abc123'),
+    (2, 'nguyenanh', 'abc!23@'),
+    (3, 'tranvanchien', 'huyag'),
+    (4, 'minhhoang', '34gf4'),
+    (5, 'lanhoang', '5hadg')";
+  $db->exec($query);
 
-$conn_string = "postgres://$user:$password@$host:$port/$db";
-
-
-
-echo $conn_string;
-//$dbconn4 = pg_connect('PgSql:host=$host port=$port dbname=$db user=$user password=$password');
-//$dbh = new PDO('pgSql:$conn_string');
-$dbconn4 = pg_connect($conn_string) ;
-if(!$dbconn4){
-  echo "Error : Unable to open database\n";
+  echo "Dữ liệu đã được tạo thành công!";
+} catch (Exception $e) {
+  echo "Error: " . $e->getMessage();
 }
-$result = pg_query($dbconn4, "select * from sach");
-var_dump(pg_fetch_all($result));
-//connect to a database named "test" on the host "sheep" with a username and password
-
-//$dbconn5 = pg_connect("host=localhost options='--client_encoding=UTF8'");
-//connect to a database on "localhost" and set the command line parameter which tells the encoding is in UTF-8
-
 ?>
