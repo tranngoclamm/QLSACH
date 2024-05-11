@@ -27,17 +27,4 @@ class UserModel {
     }
 }
 
-// Sử dụng UserModel để kiểm tra đăng nhập
-$userModel = new UserModel();
-
-// Thực hiện kiểm tra đăng nhập
-$username = $_POST['username'];
-$password = $_POST['password'];
-$loggedIn = $userModel->login($username, $password);
-
-if ($loggedIn) {
-    echo "Đăng nhập thành công!";
-} else {
-    echo "Sai thông tin đăng nhập!";
-}
 ?>
