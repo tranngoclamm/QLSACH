@@ -12,4 +12,6 @@ class LoginView {
         ';
     }
 }
+$LoginView  = new LoginView();
+$LoginView->showLogin();
 ?>
