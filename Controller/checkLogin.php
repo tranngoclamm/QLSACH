@@ -10,12 +10,8 @@ class LoginController {
         $loggedIn = $userModel->login($username, $password);
 
         if ($loggedIn) {
-
-            // Sử dụng BookModel để lấy thông tin sách
-            require_once '../Model/BookModel.php';
-            $bookModel = new BookModel();
-            $books = $bookModel->getFirstFiveBooks();
-            require_once '../View/Sach.php';
+            // Redirect đến trang hiển thị sách
+            header("Location: SachController.php");
         } else {
             echo "Sai thông tin đăng nhập!";
         }
